@@ -1,0 +1,35 @@
+version: '3.4'
+services:
+  postgres:
+    restart: always
+    image: 'postgres:12.2'
+    environment:
+      TZ: "Asia/Seoul"
+      POSTGRES_USER: ${USER_NAME}
+      POSTGRES_PASSWORD: ${PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB_NAME}
+    ports:
+      - ${POSTGRES_OUT_PORT}:5432
+    volumes:
+      - /var/lib/postgresql/docker/database:/var/lib/postgresql/database
+    networks:
+      - local_network
+  app:
+    restart: always
+    image: '<Your Docker Image URL>'
+    environment:
+      TZ: "Asia/Seoul"
+      SPRING_PROFILES_ACTIVE: default
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres/${POSTGRES_DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${USER_NAME}
+      SPRING_DATASOURCE_PASSWORD: ${PASSWORD}
+      SERVER_PORT: ${SERVER_PORT}
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    networks:
+      - local_network
+    depends_on:
+      - postgres
+
+networks:
+  local_network:
